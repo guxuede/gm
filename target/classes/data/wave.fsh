@@ -1,4 +1,7 @@
 //波纹：
+/*
+safasdf
+*/
 #ifdef GL_ES
 precision mediump float;
 #endif
