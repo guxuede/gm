@@ -17,7 +17,6 @@ public class ShaderWave extends ApplicationAdapter {
 	ShaderProgram shader;
 	Mesh mesh;
 	Texture texture;
-	Matrix4 matrix = new Matrix4();
 
 	@Override
 	public void create () {
@@ -37,15 +36,10 @@ public class ShaderWave extends ApplicationAdapter {
 		texture = new Texture(Gdx.files.internal("data/items.png"));
 	}
 
-	Vector3 axis = new Vector3(0, 0, 1);
-	float angle = 0;
-
 	@Override
 	public void render () {
-		angle += Gdx.graphics.getDeltaTime() * 45;
-		matrix.setToRotation(axis, angle);
 
-		Gdx.gl20.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+		Gdx.gl20.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl20.glClearColor(0.2f, 0.2f, 0.2f, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
