@@ -30,8 +30,19 @@ public class ShaderWave extends ApplicationAdapter {
 		}
 
 		mesh = new Mesh(true, 4, 6, VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
-		mesh.setVertices(new float[] {-0.5f, -0.5f, 0, 1, 1, 1, 1, 0, 1, 0.5f, -0.5f, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.5f, 0, 1, 1, 1,
-				1, 1, 0, -0.5f, 0.5f, 0, 1, 1, 1, 1, 0, 0});
+		mesh.setVertices(new float[] {
+				-0.5f, -0.5f, 0, 
+				1, 1, 1, 
+				1, 0, 1, 
+				0.5f, -0.5f, 0, 
+				1, 1, 1, 
+				1, 1, 1, 
+				0.5f, 0.5f, 0, 
+				1, 1, 1,
+				1, 1, 0, 
+				-0.5f, 0.5f, 0, 
+				1, 1, 1, 
+				1, 0, 0});
 		mesh.setIndices(new short[] {0, 1, 2, 2, 3, 0});
 		texture = new Texture(Gdx.files.internal("data/items.png"));
 	}
