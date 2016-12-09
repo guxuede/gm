@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 
@@ -27,47 +28,28 @@ public class MeshTriangles2 extends ApplicationAdapter
 	Mesh mesh;
 	public void create() {
 		// 以下命令供GPU使用(不支持GLES2.0就不用跑了)
-		String vertexShader = "attribute vec4 a_position;"
-				+ "attribute vec2 a_texCoord" + "varying vec2 v_texCoord;"
-				+ "void main() " + "{ " + " gl_Position = a_position;"
-				+ " v_texCoord = a_texCoord; " + "} ";
-		String fragmentShader = "ifdef GL_ES"
-				+ "precision mediump float;"
-				+ "endif "
-				+ "varying vec2 v_texCoord;"
-				+ "uniform sampler2D s_texture;"
-				+ "uniform sampler2D s_texture2;"
-				+ "void main()"
-				+ "{"
-				+ " gl_FragColor = texture2D( s_texture, v_texCoord ) * texture2D( s_texture2, v_texCoord);"
-				+ "} ";
-		// 构建ShaderProgram
+		String vertexShader = Gdx.files.internal("data/mesh2.vsh").readString();
+		String fragmentShader = Gdx.files.internal("data/mesh2.fsh").readString();;
+
 		shader = new ShaderProgram(vertexShader, fragmentShader);
+		if (shader.isCompiled() == false) {
+			Gdx.app.log("ShaderTest", shader.getLog());
+			Gdx.app.exit();
+		}
 		// 构建网格对象
 		mesh = new Mesh( true , 4 , 6 , new VertexAttribute(VertexAttributes.Usage.Position, 2 ,"a_position" ),
 				new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2 , "a_texCoord" ));
-		float[] vertices = { -0.5f, 0.5f, 0.0f, 0.0f, -0.5f, -0.5f, 0.0f,
+		float[] vertices = { 
+				-0.5f, 0.5f, 0.0f, 0.0f, -0.5f, -0.5f, 0.0f,
 				1.0f, 0.5f, -0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f, 0.0f };
 		short[] indices = { 0, 1, 2, 0, 2, 3 };
 		// 注入定点坐标
 		mesh.setVertices(vertices);
 		mesh.setIndices(indices);
+		
 		// 以Pixmap生成两个指定内容的Texture
-		Pixmap pixmap = new Pixmap(256, 256, Pixmap.Format.RGBA8888);
-		pixmap.setColor(1, 1, 1, 1);
-		pixmap.fill();
-		pixmap.setColor(0, 0, 0, 1);
-		pixmap.drawLine(0, 0, 256, 256);
-		pixmap.drawLine(256, 0, 0, 256);
-		texture = new Texture(pixmap);
-		pixmap.dispose();
-		pixmap = new Pixmap(256, 256, Pixmap.Format.RGBA8888);
-		pixmap.setColor(1, 1, 1, 1);
-		pixmap.fill();
-		pixmap.setColor(0, 0, 0, 1);
-		pixmap.drawLine(128, 0, 128, 256);
-		texture2 = new Texture(pixmap);
-		pixmap.dispose();
+		texture = new Texture(Gdx.files.internal("data/items.png"));
+		texture2 = new Texture(Gdx.files.internal("data/help.png"));
 	}
 	public void dispose() {
 	}
@@ -93,6 +75,24 @@ public class MeshTriangles2 extends ApplicationAdapter
 	public void resize(int width, int height) {
 	}
 	public void resume() {
+	}
+
+/*	float InvSqrt(float x)
+	{
+		float xhalf = 0.5f*x;
+		int i = *(int*)&x; // get bits for floating VALUE
+		i = 0x5f375a86- (i>>1); // gives initial guess y0
+		x = *(float*)&i; // convert bits BACK to float
+		x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
+		return x;
+	}*/
+	public static float invSqrt(float x) {
+		float xhalf = 0.5f * x;
+		int i = Float.floatToIntBits(x);
+		i = 0x5f3759df - (i >> 1);
+		x = Float.intBitsToFloat(i);
+		x *= (1.5f - xhalf * x * x);
+		return x;
 	}
 
 	public static void main(String[] args) throws Exception

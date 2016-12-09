@@ -79,7 +79,7 @@ public class MeshTriangles1 extends ApplicationAdapter
 		//push a few triangles to the batch
 		drawTriangle(10, 10, 40, 40, Color.RED);
 		drawTriangle(50, 50, 70, 40, Color.BLUE);
-		drawTriangle(50, 50, 70, 40, Color.YELLOW);
+		drawTriangle(70, 50, 70, 40, Color.YELLOW);
 
 		//this will render the above triangles to GL, using Mesh
 		flush();
