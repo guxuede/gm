@@ -13,7 +13,7 @@ uniform float angle;
 void main()
 {
     vec2 tmp = v_texCoords;
-    tmp.x = tmp.x + 0.01 * sin(motion +  tmp.x * angle);
-    tmp.y = tmp.y + 0.01 * sin(motion +  tmp.y * angle);
+    tmp.x = tmp.x + 0.01 * tan(motion +  tmp.x * angle);
+    tmp.y = tmp.y + 0.01 * tan(motion +  tmp.y * angle);
     gl_FragColor = texture2D(u_texture, tmp);
 }

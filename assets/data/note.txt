@@ -1,0 +1,106 @@
+
+/*
+
+varying vec2 v_texCoords;
+uniform sampler2D u_texture;
+void main()
+{
+  vec2 center = vec2(1.0,1.0);
+  float radius =10.0;
+  float aspectRatio = 5.0;
+  float refractiveIndex = 0.0;
+  vec2 v_texCoordsToUse = vec2(v_texCoords.x, (v_texCoords.y * aspectRatio + 0.5 - 0.5 * aspectRatio));//归一化坐标空间需要考虑屏幕是一个单位宽和一个单位长
+      float distanceFromCenter = distance(center, v_texCoordsToUse);//计算特定像素点距离球形的中心有多远。使用GLSL内建的distance()函数，用勾股定律计算出中心坐标和长宽比矫正过的纹理坐标的距离
+     lowp float checkForPresenceWithinSphere = step(distanceFromCenter, radius); //计算片段是否在球体内。
+
+     distanceFromCenter = distanceFromCenter / radius;  //标准化到球心的距离，重新设置distanceFromCenter
+
+      float normalizedDepth = radius * sqrt(1.0 - distanceFromCenter * distanceFromCenter); //模拟一个玻璃球，需要计算球的“深度”是多少。
+      vec3 sphereNormal = normalize(vec3(v_texCoordsToUse - center, normalizedDepth)); //归一化
+
+      vec3 refractedVector = refract(vec3(0.0, 0.0, -1.0), sphereNormal, refractiveIndex); //GLSL的refract()函数以刚才创建的球法线和折射率来计算当光线通过球时从任意一个点看起来如何。
+
+     gl_FragColor = texture2D(u_texture, (refractedVector.xy + 1.0) * 0.5) * checkForPresenceWithinSphere; //最后凑齐所有计算需要的颜色信息。
+}
+*/
+
+
+
+
+法线贴图例子：
+    final String VERT =
+            "attribute vec4 "+ShaderProgram.POSITION_ATTRIBUTE+";\n" +
+                    "attribute vec4 "+ShaderProgram.COLOR_ATTRIBUTE+";\n" +
+                    "attribute vec2 "+ShaderProgram.TEXCOORD_ATTRIBUTE+"0;\n" +
+
+                    "uniform mat4 u_projTrans;\n" +
+                    " \n" +
+                    "varying vec4 vColor;\n" +
+                    "varying vec2 vTexCoord;\n" +
+
+                    "void main() {\n" +
+                    "	vColor = "+ShaderProgram.COLOR_ATTRIBUTE+";\n" +
+                    "	vTexCoord = "+ShaderProgram.TEXCOORD_ATTRIBUTE+"0;\n" +
+                    "	gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" +
+                    "}";
+
+    //no changes except for LOWP for color values
+    //we would store this in a file for increased readability
+    final String FRAG =
+            //GL ES specific stuff
+            "#ifdef GL_ES\n" //
+                    + "#define LOWP lowp\n" //
+                    + "precision mediump float;\n" //
+                    + "#else\n" //
+                    + "#define LOWP \n" //
+                    + "#endif\n" + //
+                    "//attributes from vertex shader\n" +
+                    "varying LOWP vec4 vColor;\n" +
+                    "varying vec2 vTexCoord;\n" +
+                    "\n" +
+                    "//our texture samplers\n" +
+                    "uniform sampler2D u_texture;   //diffuse map\n" +
+                    "uniform sampler2D u_normals;   //normal map\n" +
+                    "\n" +
+                    "//values used for shading algorithm...\n" +
+                    "uniform vec2 Resolution;         //resolution of screen\n" +
+                    "uniform vec3 LightPos;           //light position, normalized\n" +
+                    "uniform LOWP vec4 LightColor;    //light RGBA -- alpha is intensity\n" +
+                    "uniform LOWP vec4 AmbientColor;  //ambient RGBA -- alpha is intensity \n" +
+                    "uniform vec3 Falloff;            //attenuation coefficients\n" +
+                    "\n" +
+                    "void main() {\n" +
+                    "	//RGBA of our diffuse color\n" +
+                    "	vec4 DiffuseColor = texture2D(u_texture, vTexCoord);\n" +
+                    "	\n" +
+                    "	//RGB of our normal map\n" +
+                    "	vec3 NormalMap = texture2D(u_normals, vTexCoord).rgb;\n" +
+                    "	\n" +
+                    "	//The delta position of light\n" +
+                    "	vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);\n" +
+                    "	\n" +
+                    "	//Correct for aspect ratio\n" +
+                    "	LightDir.x *= Resolution.x / Resolution.y;\n" +
+                    "	\n" +
+                    "	//Determine distance (used for attenuation) BEFORE we normalize our LightDir\n" +
+                    "	float D = length(LightDir);\n" +
+                    "	\n" +
+                    "	//normalize our vectors\n" +
+                    "	vec3 N = normalize(NormalMap * 2.0 - 1.0);\n" +
+                    "	vec3 L = normalize(LightDir);\n" +
+                    "	\n" +
+                    "	//Pre-multiply light color with intensity\n" +
+                    "	//Then perform \"N dot L\" to determine our diffuse term\n" +
+                    "	vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);\n" +
+                    "\n" +
+                    "	//pre-multiply ambient color with intensity\n" +
+                    "	vec3 Ambient = AmbientColor.rgb * AmbientColor.a;\n" +
+                    "	\n" +
+                    "	//calculate attenuation\n" +
+                    "	float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );\n" +
+                    "	\n" +
+                    "	//the calculation which brings it all together\n" +
+                    "	vec3 Intensity = Ambient + Diffuse * Attenuation;\n" +
+                    "	vec3 FinalColor = DiffuseColor.rgb * Intensity;\n" +
+                    "	gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);\n" +
+                    "}";
