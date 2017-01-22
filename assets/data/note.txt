@@ -104,3 +104,94 @@ void main()
                     "	vec3 FinalColor = DiffuseColor.rgb * Intensity;\n" +
                     "	gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);\n" +
                     "}";
+
+
+
+
+
+
+
+
+http://www.gamemaker.cn/thread-718-1-1.html
+一、描边外框
+
+
+
+      描边有很多种算法，各不相同，这里咱们说一种简单易懂的：当前坐标色如果判定不为透明色，则判定四周，如果四周有透明色，则认为他是边缘，并将透明色绘制为外框色。
+//获取当前贴图的颜色
+    vec4 _texCol = texture2D( gm_BaseTexture,  v_vTexcoord);
+    //获取附近贴图的颜色，偏移值为0.005,适当调节偏移值，获取合适的影响范围
+    vec4 _texCol1 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x+.005, v_vTexcoord.y));
+    vec4 _texCol2 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.005, v_vTexcoord.y));
+    vec4 _texCol3 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x, v_vTexcoord.y+.005));
+    vec4 _texCol4 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x, v_vTexcoord.y-.005));
+    vec4 _texCol5 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x+.005, v_vTexcoord.y+.005));
+    vec4 _texCol6 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.005, v_vTexcoord.y+.005));
+    vec4 _texCol7 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.005, v_vTexcoord.y+.005));
+    vec4 _texCol8 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.005, v_vTexcoord.y-.005));
+    //当前色的Alpha通道大于0 并且附近有小于0.01的Alpha的像素，我们认为他为边缘。
+    if (_texCol.a > 0.0 && (_texCol1.a < .01 ||  _texCol2.a < .01 || _texCol3.a < .01 || _texCol4.a < .01 || _texCol5.a < .01 ||  _texCol6.a < .01 || _texCol7.a < .01 || _texCol8.a < .01))
+        {
+            //最终值
+           _texCol.rgba = vec4(0.1,1.0,1.0,_texCol.a);
+        }
+复制代码
+        这样，就能得到一个边缘啦，这里偏移值则是纹理的影响范围，建议通过gm传输精准的精灵的高宽，效果更好一些。
+
+
+二、黑白精灵
+
+       黑白精灵就是一个彩色精灵的灰度值，灰度值有一个经典的计算公式:Gray = R*0.299 + G*0.587 + B*0.114；有用这个公式的话，咱们自然能够更加简单的通过shader来得到灰度图片啦。
+   //获取当前贴图的颜色
+    vec4 _texCol = texture2D( gm_BaseTexture,  v_vTexcoord);
+    //获取灰度值
+    float _texGray = dot(_texCol.rgb, vec3(0.299, 0.587, 0.114));
+    //将灰度值分别赋予rgb三色通道
+    _texCol.rgb = vec3(_texGray,_texGray,_texGray);
+复制代码
+     注：根据矩阵乘法，关于dot函数则是向量乘法之一点积，，在GS的原文里有介绍：DOT(A,B) is the same as A'*B     Ex.
+    >> A = [3 4];
+    >> B = [1 1];
+    >> C = dot(A,B)
+          C = 7
+
+三、模糊精灵
+
+    模糊同样也有很多种算法，各不相同，这里使用的是取附八个方位的像素平均色的方法来赋予当前像素的颜色：
+  vec4 _texCol = texture2D( gm_BaseTexture,  v_vTexcoord);
+    //获取附近贴图的颜色，偏移值为0.002,适当调节偏移值，获取合适的影响范围
+    vec4 _texCol1 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x+.002, v_vTexcoord.y));
+    vec4 _texCol2 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.002, v_vTexcoord.y));
+    vec4 _texCol3 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x, v_vTexcoord.y+.002));
+    vec4 _texCol4 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x, v_vTexcoord.y-.002));
+    vec4 _texCol5 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x+.002, v_vTexcoord.y+.002));
+    vec4 _texCol6 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.002, v_vTexcoord.y+.002));
+    vec4 _texCol7 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.002, v_vTexcoord.y+.002));
+    vec4 _texCol8 = texture2D( gm_BaseTexture,  vec2(v_vTexcoord.x-.002, v_vTexcoord.y-.002));
+复制代码
+
+
+四、马赛克精灵
+
+
+    马赛克精灵在官方的shader例子里也出现过，是一个很有意思的效果哦，不过他的算法很简单，其实就是将当前的精灵纹理缩小，取整锐化，然后再放大。
+    //定义一个三维变量用来存储缩放后的纹理
+    vec2 _tmpUV= (v_vTexcoord/UVsc.xy)/UVsc.z;
+    //取整
+    _tmpUV=floor(_tmpUV);
+    //再将缩放后的UVsc还原为原大小
+    vec2 UV = _tmpUV * UVsc.xy * UVsc.z;
+    //最终结果
+    vec4 _texCol = texture2D( gm_BaseTexture,  UV);
+复制代码
+
+
+这里咱只做了四个效果，展现shader强大的功能，希望你们能用他举一反三，得到更多更强大的效果哦。
+
+
+实例下载:
+mizukiyo.ys168.com->范例(实例)
+->shader_EX.gmz
+
+附：
+如果访问的变量是一个四维变量比如程序里粗线的_texCol，如果你只想改变其中的蓝色和红色为绿色和蓝色，那么则可以_texCol.rb = vec2(_texCol.g,_texCol.b);

@@ -1,3 +1,20 @@
+/*
+#ifdef GL_ES
+#define LOWP lowp
+precision mediump float;
+#else
+#define LOWP
+#endif
+varying LOWP vec4 v_color;
+varying vec2 v_texCoords;
+uniform sampler2D u_texture;
+void main()
+{
+  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);
+}
+*/
+
+
 #ifdef GL_ES
 #define LOWP lowp
 precision mediump float;
@@ -5,8 +22,8 @@ precision mediump float;
 #define LOWP
 #endif
 //attributes from vertex shader
-varying LOWP vec4 vColor;
-varying vec2 vTexCoord;
+varying LOWP vec4 v_color;
+varying vec2 v_texCoords;
 
 //our texture samplers
 uniform sampler2D u_texture;   //diffuse map
@@ -21,10 +38,10 @@ uniform vec3 Falloff;            //attenuation coefficients
 
 void main() {
 	//RGBA of our diffuse color
-	vec4 DiffuseColor = texture2D(u_texture, vTexCoord);
+	vec4 DiffuseColor = texture2D(u_texture, v_texCoords);
 
 	//RGB of our normal map
-	vec3 NormalMap = texture2D(u_normals, vTexCoord).rgb;
+	vec3 NormalMap = texture2D(u_normals, v_texCoords).rgb;
 
 	//The delta position of light
 	vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);
@@ -41,7 +58,11 @@ void main() {
 
 	//Pre-multiply light color with intensity
 	//Then perform "N dot L" to determine our diffuse term
-	vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);
+	float maxNL = 0.0;
+	if(NormalMap.r == 0 && NormalMap.g == 0 && NormalMap.b == 0){
+	    maxNL = 1.1;
+	}
+	vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), maxNL);//todo hack this when NormalMap is null
 
 	//pre-multiply ambient color with intensity
 	vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
@@ -52,5 +73,5 @@ void main() {
 	//the calculation which brings it all together
 	vec3 Intensity = Ambient + Diffuse * Attenuation;
 	vec3 FinalColor = DiffuseColor.rgb * Intensity;
-	gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);
+	gl_FragColor = v_color * vec4(FinalColor, DiffuseColor.a);
 }
