@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 public class ShaderLesson6_Normap extends ApplicationAdapter {
 
 
+    public static final float[] FLOATS = new float[]{100.0f, 100.0f, 100.0f, 200f, 200f, 200f};
+
     public static void main(String[] args) {
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.width = 640;
@@ -55,7 +57,7 @@ public class ShaderLesson6_Normap extends ApplicationAdapter {
     public static final Vector3 FALLOFF = new Vector3(.4f, 3f, 20f);
 
 
-
+    float motion = 0;
     @Override
     public void create() {
         bg = new Texture(Gdx.files.internal("data/items.png"));
@@ -87,6 +89,8 @@ public class ShaderLesson6_Normap extends ApplicationAdapter {
         shader.setUniformf("AmbientColor", AMBIENT_COLOR.x, AMBIENT_COLOR.y, AMBIENT_COLOR.z, AMBIENT_INTENSITY);
         shader.setUniformf("Falloff", FALLOFF);
         shader.setUniformf("LightPos", new Vector3(-99999999f,-9999999999f,-9999999999f));
+        shader.setUniformf("motion", motion += 0.05);
+        shader.setUniform3fv("lights", FLOATS, 0, 6);
         //LibGDX likes us to end the shader program
         shader.end();
 
@@ -145,6 +149,7 @@ public class ShaderLesson6_Normap extends ApplicationAdapter {
 
         //send a Vector4f to GLSL
         shader.setUniformf("LightPos", LIGHT_POS);
+        shader.setUniformf("motion", motion += 0.05);
 
         //bind normal map to texture unit 1
         rockNormals.bind(1);

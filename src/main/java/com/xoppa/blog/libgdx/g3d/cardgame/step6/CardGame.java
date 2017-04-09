@@ -136,15 +136,15 @@ public class CardGame implements ApplicationListener {
 		deck = new CardDeck(atlas, 3);
 
 		Card card1 = deck.getCard(Suit.Diamonds, Pip.Queen);
-		card1.worldTransform.translate(-1, 0, 0);
+		card1.worldTransform.scale(1f,1f,1f).translate(0.4f, 0, 0.4f);
 		cards.add(card1);
 		
 		Card card2 = deck.getCard(Suit.Hearts, Pip.Four);
-		card2.worldTransform.translate(0, 0, 0);
+		card2.worldTransform.translate(0.5f, 0, 0.5f);
 		cards.add(card2);
 		
 		Card card3 = deck.getCard(Suit.Spades, Pip.Ace);
-		card3.worldTransform.translate(1, 0, 0);
+		card3.worldTransform.translate(0.6f, 0, 0.6f);
 		cards.add(card3);
 		
 		cam = new PerspectiveCamera();

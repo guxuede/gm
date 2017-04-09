@@ -32,9 +32,12 @@ uniform sampler2D u_normals;   //normal map
 //values used for shading algorithm...
 uniform vec2 Resolution;         //resolution of screen
 uniform vec3 LightPos;           //light position, normalized
+uniform vec3 LightPos1;           //light position, normalized
+uniform vec3 LightPos2;           //light position, normalized
 uniform LOWP vec4 LightColor;    //light RGBA -- alpha is intensity
 uniform LOWP vec4 AmbientColor;  //ambient RGBA -- alpha is intensity
 uniform vec3 Falloff;            //attenuation coefficients
+uniform float motion;
 
 void main() {
 	//RGBA of our diffuse color
@@ -43,35 +46,44 @@ void main() {
 	//RGB of our normal map
 	vec3 NormalMap = texture2D(u_normals, v_texCoords).rgb;
 
+vec3 Sum = vec3(0.0);
+
 	//The delta position of light
 	vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);
-
-	//Correct for aspect ratio
 	LightDir.x *= Resolution.x / Resolution.y;
-
-	//Determine distance (used for attenuation) BEFORE we normalize our LightDir
 	float D = length(LightDir);
-
-	//normalize our vectors
 	vec3 N = normalize(NormalMap * 2.0 - 1.0);
 	vec3 L = normalize(LightDir);
-
-	//Pre-multiply light color with intensity
-	//Then perform "N dot L" to determine our diffuse term
-	float maxNL = 0.0;
-	if(NormalMap.r == 0 && NormalMap.g == 0 && NormalMap.b == 0){
-	    maxNL = 1.1;
-	}
-	vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), maxNL);//todo hack this when NormalMap is null
-
-	//pre-multiply ambient color with intensity
+	vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0);//todo hack this when NormalMap is null
 	vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
-
-	//calculate attenuation
 	float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
-
-	//the calculation which brings it all together
 	vec3 Intensity = Ambient + Diffuse * Attenuation;
 	vec3 FinalColor = DiffuseColor.rgb * Intensity;
-	gl_FragColor = v_color * vec4(FinalColor, DiffuseColor.a);
+	Sum += FinalColor;
+
+    vec3 LightDir = vec3(LightPos1.xy - (gl_FragCoord.xy / Resolution.xy), LightPos1.z);
+    LightDir.x *= Resolution.x / Resolution.y;
+    float D = length(LightDir);
+    vec3 N = normalize(NormalMap * 2.0 - 1.0);
+    vec3 L = normalize(LightDir);
+    vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0);//todo hack this when NormalMap is null
+    vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
+    float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
+    vec3 Intensity = Ambient + Diffuse * Attenuation;
+    vec3 FinalColor = DiffuseColor.rgb * Intensity;
+    Sum += FinalColor;
+
+    vec3 LightDir = vec3(LightPos2.xy - (gl_FragCoord.xy / Resolution.xy), LightPos2.z);
+    LightDir.x *= Resolution.x / Resolution.y;
+    float D = length(LightDir);
+    vec3 N = normalize(NormalMap * 2.0 - 1.0);
+    vec3 L = normalize(LightDir);
+    vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0);//todo hack this when NormalMap is null
+    vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
+    float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
+    vec3 Intensity = Ambient + Diffuse * Attenuation;
+    vec3 FinalColor = DiffuseColor.rgb * Intensity;
+    Sum += FinalColor;
+
+	gl_FragColor = v_color * vec4(Sum, DiffuseColor.a);
 }

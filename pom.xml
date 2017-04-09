@@ -49,5 +49,40 @@
       <version>1.9.4</version>
       <classifier>natives-desktop</classifier>
     </dependency>
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-box2d-platform</artifactId>
+          <version>1.9.4</version>
+          <classifier>natives-desktop</classifier>
+      </dependency>
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-box2d</artifactId>
+          <version>1.9.4</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-freetype-platform</artifactId>
+          <version>1.9.4</version>
+          <classifier>natives-desktop</classifier>
+      </dependency>
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-freetype</artifactId>
+          <version>1.9.4</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-controllers-platform</artifactId>
+          <version>1.9.4</version>
+          <classifier>natives-desktop</classifier>
+      </dependency>
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-controllers-desktop</artifactId>
+          <version>1.9.4</version>
+      </dependency>
   </dependencies>
 </project>

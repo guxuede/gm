@@ -52,7 +52,7 @@ public class Basic3DTest implements ApplicationListener {
 		
         ModelBuilder modelBuilder = new ModelBuilder();
         model = modelBuilder.createBox(5f, 5f, 5f, 
-            new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+            new Material(ColorAttribute.createDiffuse(Color.GREEN),ColorAttribute.createReflection(Color.GRAY)),
             Usage.Position | Usage.Normal);
         instance = new ModelInstance(model);
 	}
