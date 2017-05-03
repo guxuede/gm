@@ -128,12 +128,12 @@ public class GroupTest extends GdxTest {
 		// horiz.setWidth(200);
 		horiz.setHeight(100);
 		horiz.fill();
-		horiz.expand();
+//		horiz.expand();
 		horiz.invalidate();
 		
 		horizWrap.setVisible(true);
 		horizWrap.fill();
-		horizWrap.expand();
+//		horizWrap.expand();
 		horizWrap.setWidth(Gdx.input.getX() - horizWrap.getX());
 		// horizWrap.setHeight(horizWrap.getPrefHeight());
 		horizWrap.setHeight(200);

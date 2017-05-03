@@ -659,21 +659,23 @@ public class GwtTestWrapper extends GdxTest {
 			public GdxTest instance () {
 				return new PixelsPerInchTest();
 			}
-		},
+		}
 // new Instancer() {public GdxTest instance(){return new PixmapBlendingTest();}}, // FIXME no idea why this doesn't work
-		new Instancer() {
-			public GdxTest instance () {
-				return new ProjectiveTextureTest();
-			}
-		}, new Instancer() {
+//		new Instancer() {
+//			public GdxTest instance () {
+//				return new ProjectiveTextureTest();
+//			}
+//		}
+            , new Instancer() {
 			public GdxTest instance () {
 				return new RotationTest();
 			}
-		}, new Instancer() {
-			public GdxTest instance () {
-				return new ReflectionCorrectnessTest();
-			}
 		},
+//            , new Instancer() {
+//			public GdxTest instance () {
+//				return new ReflectionCorrectnessTest();
+//			}
+//		},
 // new Instancer() {public GdxTest instance(){return new RunnablePostTest();}}, // Goes into infinite loop
 // new Instancer() {public GdxTest instance(){return new ScrollPaneTest();}}, // FIXME this messes up stuff, why?
 // new Instancer() {public GdxTest instance(){return new ShaderMultitextureTest();}}, // FIXME fucks up stuff

@@ -25,13 +25,13 @@ public class VehicleFilterTest extends VehicleTest {
 	static final short FILTER_GROUP = (short)(1 << 11);
 	static final short FILTER_MASK = FILTER_GROUP;
 
-	@Override
-	protected btVehicleRaycaster getRaycaster () {
-		FilterableVehicleRaycaster raycaster = new FilterableVehicleRaycaster((btDynamicsWorld)world.collisionWorld);
-		raycaster.setCollisionFilterGroup(FILTER_GROUP);
-		raycaster.setCollisionFilterMask(FILTER_MASK);
-		return raycaster;
-	}
+//	@Override
+//	protected btVehicleRaycaster getRaycaster () {
+//		FilterableVehicleRaycaster raycaster = new FilterableVehicleRaycaster((btDynamicsWorld)world.collisionWorld);
+//		raycaster.setCollisionFilterGroup(FILTER_GROUP);
+//		raycaster.setCollisionFilterMask(FILTER_MASK);
+//		return raycaster;
+//	}
 
 	@Override
 	public void create () {
