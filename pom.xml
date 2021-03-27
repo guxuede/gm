@@ -84,5 +84,10 @@
           <artifactId>gdx-controllers-desktop</artifactId>
           <version>1.9.4</version>
       </dependency>
+      <dependency>
+          <groupId>com.badlogicgames.gdx</groupId>
+          <artifactId>gdx-bullet</artifactId>
+          <version>1.9.4</version>
+      </dependency>
   </dependencies>
 </project>

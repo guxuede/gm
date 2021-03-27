@@ -1,14 +1,14 @@
-package com.badlogic.gdx;
+package com.pixelscientists.gdx;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.tests.gwt.GwtTestWrapper;
+//import com.pixelscientists.gdx.LibgdxUtils;
 
 /**
  * Created by guxuede on 2017/4/9 .
  */
-public class GdxSampleDemoLunch  {
+public class InventoryDemoGameLunch {
 
     public static void main (String[] args) throws Exception {
-        new LwjglApplication(new GwtTestWrapper());
+        new LwjglApplication(new InventoryDemoGame());
     }
 }
